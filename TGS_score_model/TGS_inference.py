@@ -1,31 +1,56 @@
+# -*- coding: utf-8 -*-
+"""
+Processing and preparing datasets.
+
+@author: LT
+"""
 import os
-import net
-import torch
-import shutil
-import argparse
 import numpy as np
-import torch.nn.functional as F
 from osgeo import gdal
-from utils.utils import read_tiff, write_tiff
+import matplotlib.pyplot as plt
+import torch
+from ..utils.utils import read_tiff, write_tiff
+from utils import net
+import torch.nn as nn
+import torch.nn.functional as F
+import torchvision.transforms as transforms
+from utils.loss_new import F1_Loss, Precision_loss
+from sklearn.metrics import (accuracy_score, f1_score, precision_score,
+                             recall_score)
 
 os.environ["CUDA_VISIBLE_DEVICES"] = '0,1,2,3,4,5,6,7'
 
-parser = argparse.ArgumentParser()
-parser.add_argument('--num_para', default=18, type=int)
-parser.add_argument('--tensorboard', action='store_true')
-parser.add_argument('--input_path', default='../dataset_20240402', type=str)
-parser.add_argument('--input_dataset', default='All_trees_0408.npy', type=str)
+class DataPreparation:
+    def __init__(self, label_path, input_parameter_dir):
+        self.label_path = label_path
+        self.input_parameter_dir = input_parameter_dir
+        plt.rcParams['font.sans-serif'] = 'Times New Roman'
+
+    def preprocess_data(self):
+        """Process input data and prepare datasets."""
+        label, geot, proj = read_tiff(self.label_path)
+        label[label < 0] = -1
+        h, w = label.shape
+
+        paralist = [j for j in os.listdir(self.input_parameter_dir) if j.endswith('.tif')]
+        num_p = len(paralist)
+        para_mat = np.zeros((h, w, num_p), dtype=np.float32)
+
+        for k, name in enumerate(paralist):
+            pth = os.path.join(self.input_parameter_dir, name)
+            img, _, _ = self.read_tiff(pth)
+            img[img < -101] = np.NAN
+            para_mat[:, :, k] = img
+        return self.normlize(para_mat), geot, proj
+    
+    def normlize(self, para_mat):
+        mean = np.load('../dataset/environmental/mean_value.npy')
+        std= np.load('../dataset/environmental/std_value.npy')
+        para_mat= (para_mat - mean) / std
+        return para_mat
 
 
-inpth = r'/home/liutang/World_tree_carbon/dataset/Predction/input_submat'
-oupth = r'/home/liutang/World_tree_carbon/dataset/Predction/Output_submat'
-wholepth = r'/home/liutang/World_tree_carbon/dataset/Predction/Output_wholetif'
-model_path = r'/home/liutang/World_tree_carbon/code/inference/best_f1_model'
-
-meanpth = r'/home/liutang/World_tree_carbon/dataset/Predction/input_wholemat/mean'
-stdpth = r'/home/liutang/World_tree_carbon/dataset/Predction/input_wholemat/std'
-
-def go(innpy, meannpy, stdnpy, model_path, batch):
+def go(input_data,model_path,batch):
     if not torch.cuda.is_available():
         raise Exception("GPU Error!")
 
@@ -65,12 +90,6 @@ def go(innpy, meannpy, stdnpy, model_path, batch):
             softmax = output.cpu().numpy()
         return softmax
 
-    input_mat = np.load(innpy)
-    mean_mat = np.load(meannpy)
-    std_mat = np.load(stdnpy)
-
-    input_data = (input_mat[:,:,:-2]-mean_mat[:-2])/std_mat[:-2]
-
     row, col, envs = input_data.shape
     #pre_label = np.zeros((row,col),dtype=np.float32)
     out_result = parallelseg(input_data)
@@ -80,46 +99,24 @@ def go(innpy, meannpy, stdnpy, model_path, batch):
     out_result = out_result*10000
     return out_result.astype(np.int16)
 
-def batch_prec(inpth, oupth, model_path, class_num):
 
-    if not os.path.exists(oupth):
-        os.makedirs(oupth)
+if __name__ == '__main__':
+    # Example usage
+    dp = DataPreparation(
+        label_path='../dataset/forest_label/Hansen_1km_th30.tif',
+        input_parameter_dir='../dataset/environmental',
+    )
+    data, geot, proj = dp.preprocess_data()
 
-    meannpy = os.path.join(meanpth, 'array_mean.npy')
-    stdnpy = os.path.join(stdpth, 'array_std.npy')
-
-    file_list = os.listdir(inpth)
-    for file in file_list:
-        in_file_pth = os.path.join(inpth, file)
-        oufile = go(in_file_pth, meannpy, stdnpy, model_path, class_num, batch=2200000)
-        ou_file_pth = os.path.join(oupth, file)
-        np.save(ou_file_pth, oufile)
-
-    ec_pth = r'/home/liutang/World_tree_carbon/dataset/Parameter/EC/BIO_C_2017.tif'
+    model_path = './runs/Fold_3_0402-2024-04-02-22-48-07/model_best_total_acc.pth.tar'
+    result = go(data, model_path, batch=1000000)
+    output_dir='../result/TGS_score/TGS_score.tif'
+    write_tiff(output_dir, result, geot, proj)
 
 
-def submat2tif(inpth,outpth,class_num):
     
-    ec_label,geot, proj = read_tiff(ec_pth)
-    ec_label = ec_label[:, :, 0]
-    ec_label[ec_label < 0] = -1
-    ec_label = ec_label.astype(np.int8)
-    ec_label[ec_label!=class_num] = 0
-    ec_label[ec_label==class_num] = 1
-    # out_array = out_array * ec_label
-
-    ec_out_pth = os.path.join(r'/home/liutang/World_tree_carbon/dataset/Predction/ec_class_label', class_name + '.tif')
-
-    outpth = os.path.join(outpth, class_name + '.tif')
-    #write_tiff(outpth, out_array, geot, proj)
-    write_tiff(ec_out_pth, ec_label, geot, proj)
-
-
-if __name__ == "__main__":
-    for c in range(1,5):
-        #batch_prec(inpth, oupth, model_path, c)
-        submat2tif(oupth, wholepth, c)
     
+
 
 
 
