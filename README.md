@@ -1,4 +1,4 @@
-# Tree_planting_potential
+# Tree planting potential
 Carbon Sequestration Potential of Tree Planting in China
 
 # Data source
