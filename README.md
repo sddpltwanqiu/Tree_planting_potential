@@ -1,4 +1,4 @@
-# Tree planting potential
+# Carbon Sequestration Potential of Tree Planting in China
 This repository contains the code and data for the project "Carbon Sequestration Potential of Tree Planting in China."
 
 ## Table of Contents
