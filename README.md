@@ -38,7 +38,10 @@ pip install -r requirements.txt
 
 
 ## Data
-Download the necessary data files from the provided links or specified sources.
+The data required for this project includes:
+
+Download the necessary data files from the provided links or specified sources (See Data Availability in the paper).
+Please ensure that the necessary datasets are placed in the appropriate directories before running the analysis.
 
 ## Run Models
 Navigate to a specific model directory (e.g., CarbonPotential or TreeNumberPotential) and execute the corresponding Python scripts to generate analysis results.
