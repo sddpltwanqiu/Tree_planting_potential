@@ -26,7 +26,9 @@ The **Tree Planting Potential Analysis** project is focused on identifying and e
 ## Installation
 
 To use the code in this repository, clone the repository and install the required dependencies.
-
+To run the scripts in this project, ensure your environment meets the following requirements:
+Python version 3.7.3 or higher
+PyTorch version 1.0.0 or higher
 ```bash
 git clone https://github.com/sddpltwanqiu/Tree_planting_potential.git
 cd Tree_planting_potential
@@ -35,31 +37,18 @@ pip install -r requirements.txt
 ## Usage
 
 
-
-
-# Data source
-
-## Download Data
-Download the necessary data files from the provided links or specified sources.The data can be found at https://doi.org/10.6084/m9.figshare.25707414.
-
-## System Requirements
-To run the scripts in this project, ensure your environment meets the following requirements:
-Python version 3.7.3 or higher
-PyTorch version 1.0.0 or higher
-
-# 
-
-
-
-
+## Data
+Download the necessary data files from the provided links or specified sources.
 
 ## Run Models
 Navigate to a specific model directory (e.g., CarbonPotential or TreeNumberPotential) and execute the corresponding Python scripts to generate analysis results.
 
+## Results
+The data can be found at https://doi.org/10.6084/m9.figshare.25707414.
 
-Contributing
+## Contributing
 Contributions to this project are welcome! If you have any suggestions, bug fixes, or new features, please submit a pull request or open an issue.
 
-License
+## License
 This project is licensed under the MIT License. See the LICENSE file for more details.
 
