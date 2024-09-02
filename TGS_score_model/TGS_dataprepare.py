@@ -67,7 +67,7 @@ if __name__ == '__main__':
     dp = DataPreparation(
         label_path='../dataset/forest_label/Hansen_1km_th30.tif',
         input_parameter_dir='../dataset/environmental',
-        output_dir='/home/liutang/Tree_Carbon/dataset_20240402/'
+        output_dir= '../dataset_usefortrain/'
     )
     data = dp.preprocess_data()
     dp.save_splits(data)
