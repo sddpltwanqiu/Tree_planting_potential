@@ -113,6 +113,6 @@ class DataProcessor:
 if __name__ == '__main__':
     dp = DataProcessor(
         in_label_dir=r'../dataset/forest_type',
-        out_path=r'../result/Tree_potential/potential_cal',
+        out_path=r'../result/Tree_potential/potential_cal', 
     )
     dp.process_data()
