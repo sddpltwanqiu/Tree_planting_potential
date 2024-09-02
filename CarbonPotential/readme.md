@@ -12,34 +12,30 @@ This branch is focused on establishing the relationship between tree density and
 
 ## Data
 
-- **Environmental Variable data:** The nine soil variables can be found at https://soilgrids.org/; The three topographic variables can be found at https://research.utwente.nl/en/publications/hole-filled-srtm-for-the-globe-version-4-data-grid; The annual solar radiation data can be found at https://doi.org/10.6084/m9.figshare.c.4891302, The aridity index data can be found at https://doi.org/10.5281/zenodo.10074189. Annual maximum land surface temperature and annual minimum land surface temperature are available at https://lpdaac.usgs.gov/products/mod11a1v006/. Annual snow cover index can be found at https://nsidc.org/data/mod10a2/versions/5.
-- **Land cover:** The land cover and land use change dataset is available at http://data.ess.tsinghua.edu.cn/fromglc2017v1.html (including urban and agricultural land data).
-- **Forest distribution:** The Hansen Global Forest Change 2000-2022 Data is available at https://glad.earthengine.app/view/global-forest-change; 
-- **Validation data :** The catalog of 816 forest parks can be found at www.gisrs.cn. All plantation forest field survey plots are available at https://doi.org/10.11922/sciencedb.j00076.00091.
+- **Biomass carbon maps:** The aboveground and belowground biomass carbon maps (Spwan et al., 2019) are from https://daac.ornl.gov/cgi-bin/dsviewer.pl?ds_id=1763, https://doi.org/10.6084/m9.figshare.21931161.v1 (Chen et al., 2023) and https://doi.org/10.1098/rstb.2019.0128 (Soto-Navarro et al.. 2020).
+- **TGS score data:** This data can be obtained through the calculations in the TGS_score_model step or downloaded from https://doi.org/10.6084/m9.figshare.25707414.
+- **Forest types classification dataset:** Forest types classification dataset (MCD12Q1: Type5 Plant Functions Types) can be obtained at https://lpdaac.usgs.gov/products/mcd12q1v006/.
+- **Tree density:** The global tree density map is available at http://elischolar.library.yale.edu/yale_fes_data/1/.
 
 ## Usage
 
 Please ensure that the necessary datasets are placed in the appropriate directories before running the analysis.
+It includes three phase:
 
-For data prepare, 
+First, extract tree density and biomass carbon storage data based on the TGS intervals， including maximum, minimum and medium value.
 ```bash
-cd TGS_score_model
-python TGS_dataprepare.py
+cd CarbonPotential
+python Step1_Carbon_statistic.py
 ```
 
-For training TGS Score model, 
+Second, establish the relationship models between tree density and biomass carbon storage.
 ```bash
-python TGS_trainer.py
+python Step2_Carbon_interpolate_fit.py
 ```
 
-For testing TGS Score model, 
+Third, Use the model established in the previous step for global inference to estimate carbon storage.
 ```bash
-python TGS_test.py
-```
-
-Using TGS Score model to map the whole China, 
-```bash
-python TGS_inference.py
+python Step3_Carbon_model_inference.py
 ```
 
 ## Results
