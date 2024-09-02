@@ -31,18 +31,28 @@ PyTorch version 1.0.0 or higher
 ```bash
 git clone https://github.com/sddpltwanqiu/Tree_planting_potential.git
 ```
+
 ## Usage
-The project is divided into three stages: Tree Growth Suitability (TGS) Score calculation, tree planting potential assessment, and carbon storage estimation. Due to the need for some operations to be completed in ARCGIS 10.8, each calculation stage is relatively independent, and users can download the results from each stage as needed.
+The project is divided into three stages: Tree Growth Suitability (TGS) Score calculation, tree planting potential assessment, and carbon storage estimation. 
 Navigate to a specific model directory (e.g., CarbonPotential or TreeNumberPotential) and execute the corresponding Python scripts to generate analysis results.
+Due to the need for some operations to be completed in ARCGIS 10.8, each calculation stage is relatively independent, and users can download the results from each stage as needed.
+
+For TGS Score calculation, need Environmental Variable data with 1km resolution (See Data Availability in the manuscript), land cover (http://data.ess.tsinghua.edu.cn/fromglc2017v1.html), forest distribution (https://glad.earthengine.app/view/global-forest-change) and validation data (https://doi.org/10.11922/sciencedb.j00076.00091)
 
 ```bash
-cd CarbonPotential
+cd TGS_score_model
+```
+For tree planting potential assessment, need TGS score, Forest types classification dataset (MCD12Q1: Type5 Plant Functions Types) and tree density data (Nature, 2015):
+```bash
 cd TreeNumberPotential
-cd 
+```
+For carbon storage estimation, need the aboveground and belowground biomass carbon maps (https://daac.ornl.gov/cgi-bin/dsviewer.pl?ds_id=1763)
+```bash
+cd CarbonPotential
 ```
 
 ## Data
-Download the necessary data files from the provided links or specified sources (See Data Availability in the paper).
+Download the necessary source data files from the provided links or specified sources (See Data Availability in the manuscript).
 Please ensure that the necessary datasets are placed in the appropriate directories before running the analysis.
 
 ## Results
